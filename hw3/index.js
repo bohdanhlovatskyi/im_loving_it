@@ -20,16 +20,16 @@ function downHandler(event) {
 
 function moveHandler(event) {
     if (isMoving === true) {
-        // console.log("moving", event.pageX, event.pageY, event.pageX % window.innerWidth)
-        event.target.style.top = event.pageY + 'px';
-        event.target.style.left = event.pageX + 'px';
+        console.log("moving", event.pageX, event.pageY, event.offsetX, event.offsetY)
+        console.log(event.target)
+        event.target.style.top = event.clientY + 'px';
+        event.target.style.left = event.clientX + 'px';
     }
 }
 
 document.addEventListener('mouseup', e => {
     isMoving = false;
 });
-
 
 colors = ["red", "green", "blue", "yellow", "black"]
 function colorHandler(event) {
@@ -62,13 +62,18 @@ function createHandler(event) {
     node.style.left = Math.floor(Math.random() * window.innerWidth) + 'px';
 
     elements[0].appendChild(node);
+    setBox(node);
 }
 
 function deleteHandler(event) {
     if (!event.altKey) return
     console.log("[LOG]: deleting")
 
-    console.log(elements[0])
+    if (elementCount === 0) {
+        console.log("[FATAL]: no nodes left");
+        return;
+    }
+
     let to_remove = null;
     for (node of elements[0].children) {
         if (node.innerHTML == elementCount) {
@@ -81,12 +86,16 @@ function deleteHandler(event) {
     elementCount--;
 }
 
+function setBox(box) {
+    box.addEventListener('contextmenu', colorHandler)
+    box.addEventListener('mousedown', downHandler)
+    box.addEventListener('mousemove', moveHandler)
+    box.addEventListener('click', resizeHandler)
+}
+
 
 for (box of elements[0].children) {
-    box.addEventListener('contextmenu', colorHandler)
-    // box.addEventListener('mousedown', downHandler)
-    // box.addEventListener('mousemove', moveHandler)
-    box.addEventListener('click', resizeHandler)
+    setBox(box)
 }
 
 document.addEventListener('click', deleteHandler)
