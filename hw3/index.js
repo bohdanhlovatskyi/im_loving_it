@@ -9,59 +9,85 @@
 // import "System"
 
 
-const elements = document.getElementsByClassName('box-container')
+let elements = document.getElementsByClassName('box-container')
 
 let isMoving = false;
-let x = 0;
-let y = 0;
+let elementCount = 1;
 
 function downHandler(event) {
-    x = event.offsetX;
-    y = event.offsetY;
     isMoving = true;
-    console.log("down")
 }
 
 function moveHandler(event) {
     if (isMoving === true) {
-        console.log("moving")
-        x = event.offsetX;
-        y = event.offsetY;
+        // console.log("moving", event.pageX, event.pageY, event.pageX % window.innerWidth)
+        event.target.style.top = event.pageY + 'px';
+        event.target.style.left = event.pageX + 'px';
     }
 }
 
 document.addEventListener('mouseup', e => {
-    if (isMoving === true) {
-      x = 0;
-      y = 0;
-      isMoving = false;
-    }
+    isMoving = false;
 });
 
+
+colors = ["red", "green", "blue", "yellow", "black"]
 function colorHandler(event) {
-    console.log("coloring")
+    console.log("[LOG]: coloring")
+
+    let color = event.target.style.background;
+    let new_color = color;
+    while (new_color === color) {
+        new_color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    event.target.style.background = new_color;
 }
 
 function resizeHandler(event) {
     if (!event.shiftKey) return
-    console.log("resizing")
+    console.log("[LOG]: resizing")
+
+    let element = event.target;
+    element.classList.toggle("box-large")
 }
 
 function createHandler(event) {
-    console.log("creating")
+    console.log("[LOG]: creating")
+
+    elementCount++;
+    let node = document.createElement("div");
+    node.className = "box";
+    node.innerHTML = elementCount;
+    node.style.top = Math.floor(Math.random() * window.innerHeight) + 'px';
+    node.style.left = Math.floor(Math.random() * window.innerWidth) + 'px';
+
+    elements[0].appendChild(node);
 }
 
 function deleteHandler(event) {
     if (!event.altKey) return
-    console.log("deleting")
+    console.log("[LOG]: deleting")
+
+    console.log(elements[0])
+    let to_remove = null;
+    for (node of elements[0].children) {
+        if (node.innerHTML == elementCount) {
+            to_remove = node;
+            break;
+        }
+    }
+    elements[0].removeChild(to_remove);
+
+    elementCount--;
 }
 
 
-for (box of elements) {
+for (box of elements[0].children) {
     box.addEventListener('contextmenu', colorHandler)
-    box.addEventListener('mousedown', downHandler)
-    box.addEventListener('mousemove', moveHandler)
+    // box.addEventListener('mousedown', downHandler)
+    // box.addEventListener('mousemove', moveHandler)
     box.addEventListener('click', resizeHandler)
-    box.addEventListener('click', deleteHandler)
-    box.addEventListener('dblclick', createHandler)
 }
+
+document.addEventListener('click', deleteHandler)
+document.addEventListener('dblclick', createHandler)
