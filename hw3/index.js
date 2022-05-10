@@ -52,9 +52,7 @@ function resizeHandler(event) {
     element.classList.toggle("box-large")
 }
 
-function dbclickHandler(event) {
-    if (event.altKey) return
-
+function deleteBox() {
     elementCount++;
     let node = document.createElement("div");
     node.className = "box";
@@ -66,9 +64,7 @@ function dbclickHandler(event) {
     setBox(node);
 }
 
-function deleteHandler(event) {
-    if (!event.altKey) return
-
+function createBox() {
     if (elementCount === 1) {
         return;
     }
@@ -85,6 +81,14 @@ function deleteHandler(event) {
     elementCount--;
 }
 
+function dbclickHandler(event) {
+    if (event.altKey) {
+        createBox();
+    } else {
+        deleteBox();
+    }
+}
+
 function setBox(box) {
     box.addEventListener('contextmenu', colorHandler)
     box.addEventListener('mousedown', downHandler)
@@ -93,9 +97,9 @@ function setBox(box) {
 }
 
 
+// --------- set handlers ---------
 for (box of elements[0].children) {
     setBox(box)
 }
 
-document.addEventListener('dblclick', deleteHandler)
 document.addEventListener('dblclick', dbclickHandler)
