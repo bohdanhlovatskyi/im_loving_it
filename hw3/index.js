@@ -6,24 +6,28 @@
 - Alt + Double-click LMB deletes a square (the last square on the page should not be deleted)
 */
 
-// import "System"
-
-
 let elements = document.getElementsByClassName('box-container')
 
+// vars for boxes movement
 let isMoving = false;
+let x = 0;
+let y = 0;
+
+// tracks number of boxes
 let elementCount = 1;
 
 function downHandler(event) {
     isMoving = true;
+
+    // note that here event.clientY is not the same as in the move handler
+    y = event.target.offsetTop - event.clientY;
+    x = event.target.offsetLeft - event.clientX;
 }
 
 function moveHandler(event) {
     if (isMoving === true) {
-        console.log("moving", event.pageX, event.pageY, event.offsetX, event.offsetY)
-        console.log(event.target)
-        event.target.style.top = event.clientY + 'px';
-        event.target.style.left = event.clientX + 'px';
+        event.target.style.top = event.clientY + y + 'px';
+        event.target.style.left = event.clientX + x + 'px';
     }
 }
 
@@ -33,8 +37,6 @@ document.addEventListener('mouseup', e => {
 
 colors = ["red", "green", "blue", "yellow", "black"]
 function colorHandler(event) {
-    console.log("[LOG]: coloring")
-
     let color = event.target.style.background;
     let new_color = color;
     while (new_color === color) {
@@ -45,14 +47,13 @@ function colorHandler(event) {
 
 function resizeHandler(event) {
     if (!event.shiftKey) return
-    console.log("[LOG]: resizing")
 
     let element = event.target;
     element.classList.toggle("box-large")
 }
 
-function createHandler(event) {
-    console.log("[LOG]: creating")
+function dbclickHandler(event) {
+    if (event.altKey) return
 
     elementCount++;
     let node = document.createElement("div");
@@ -67,10 +68,8 @@ function createHandler(event) {
 
 function deleteHandler(event) {
     if (!event.altKey) return
-    console.log("[LOG]: deleting")
 
-    if (elementCount === 0) {
-        console.log("[FATAL]: no nodes left");
+    if (elementCount === 1) {
         return;
     }
 
@@ -98,5 +97,5 @@ for (box of elements[0].children) {
     setBox(box)
 }
 
-document.addEventListener('click', deleteHandler)
-document.addEventListener('dblclick', createHandler)
+document.addEventListener('dblclick', deleteHandler)
+document.addEventListener('dblclick', dbclickHandler)
